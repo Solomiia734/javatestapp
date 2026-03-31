@@ -1,0 +1,33 @@
+name: Java Test App CI/CD
+
+on:
+  push:
+    branches: [ "main", "master" ] # Запускається і на main, і на master
+  pull_request:
+    branches: [ "main", "master" ]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Set up JDK 17
+      uses: actions/setup-java@v4
+      with:
+        java-version: '17'
+        distribution: 'temurin'
+        cache: maven
+
+    - name: Build with Maven (CI)
+      # Команда для компіляції та пакування додатка в .jar файл
+      run: mvn -B package --file pom.xml
+
+    - name: Verify Build Artifacts (CD)
+      # Перевіряємо, чи з'явилася папка target із зібраним додатком
+      run: |
+        echo "Перевірка результатів збірки..."
+        ls -R target/
+        echo "CI/CD кроки виконано успішно!"
